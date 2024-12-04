@@ -5,7 +5,7 @@ import signal
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Packages.Validation import validation2
-from Packages.GUI import App2
+from Packages.GUI import *
 
 # Global variable to keep track of the mode
 mode = 1

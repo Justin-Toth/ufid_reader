@@ -5,7 +5,7 @@ from PIL import Image, ImageTk
 import time
 import threading
 import logging
-from src.main import process_scan
+from src.main2 import process_scan
 
 # NOTE: This GUI relies on being used in the context of the main.py file in the src folder (cannot be run standalone)
 
