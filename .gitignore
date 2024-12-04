@@ -1,8 +1,10 @@
 .vscode/
 __pycache__/
+/.env
 UFIDReader/Libraries/GUI/__pycache__/
 UFIDReader/Libraries/Validation/__pycache__/
 UFIDReader/src/__pycache__/
+UFIDReader/Logs/
 UFIDReader/Testdata/
 UFIDReader/src/lib/
 UFIDReader/venv
