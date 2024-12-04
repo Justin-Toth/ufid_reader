@@ -1,5 +1,5 @@
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from datetime import datetime, timedelta
 import requests
 import logging
@@ -23,20 +23,18 @@ LOG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../Logs")
 os.makedirs(LOG_DIR, exist_ok=True)
 LOG_FILE = os.path.join(LOG_DIR, "validation.log")
 
+logger = logging.getLogger("validation_logger")
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s", datefmt="[%Y-%m-%d %H:%M:%S]")
+
+file_handler = logging.FileHandler(LOG_FILE, mode='w')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
 if ENABLE_LOGGING:
-    logging.basicConfig(
-        level=logging.INFO,  # Default logging level
-        format="%(asctime)s - %(levelname)s - %(message)s",  # Log format
-        datefmt="[%Y-%m-%d %H:%M:%S]",  # Timestamp format
-        handlers=[
-            logging.FileHandler(LOG_FILE, mode='w'),  # Log file
-            logging.StreamHandler()  # Console output
-        ]
-    )
-    logger = logging.getLogger()
-else:
-    logger = logging.getLogger()
-    logger.disabled = True
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
 
 # Helper function to make GET requests to the API
 def web_api_get_request(page, params):    
@@ -164,9 +162,12 @@ def validate(mode, serial_num, card_iso=None, card_ufid=None):
     logger.info(f"Matching courses: {courses}")
 
     # Check student sections against the course schedule
-    # Simplified logic i think
+    match_found = False
+    # Iterate through each course to find a match
     for course in courses:
         course_sec_nums = course[3].split(', ')
+        
+        # Check if any student section number matches the course section numbers
         for student_sec_num in student_sec_nums:
             if student_sec_num in course_sec_nums:
                 params = {
@@ -191,7 +192,13 @@ def validate(mode, serial_num, card_iso=None, card_ufid=None):
                 logger.info(f"Check-in site POST response: {checkin_site_response.status_code}, {checkin_site_response.text}")
 
                 is_valid = 0
+                match_found = True
                 break
+
+    # log a message if no match is found
+    if not match_found:
+        logger.error("No matching course found for the student. \n")
+        is_valid = -5 # unknown error for now
 
     return {
         "UFID": ufid,
@@ -201,4 +208,6 @@ def validate(mode, serial_num, card_iso=None, card_ufid=None):
     }
 
 # Example call
+# validate(mode={0 or 1}, serial_num={serial number from kiosk table}, card_iso={UFID ISO}, cardufid={UFID Number})
+# validate(0, serial_num="10000000d340eb60", card_ufid="91547610")
 # validate(1, serial_num="10000000d340eb60", card_ufid="91547610")
