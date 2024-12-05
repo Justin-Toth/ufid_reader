@@ -176,32 +176,23 @@ def validate(mode, serial_num, card_iso=None, card_ufid=None):
             if student_sec_num in course_sec_nums:
                 log_messages.append(f"Matching courses: {course}")
                 
+                params = {
+                    'serial_num': serial_num,
+                    'ufid': ufid,
+                    'iso': iso,
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'course': course[0],
+                    'class': student_sec_num,
+                    'time': now.strftime("%Y-%m-%d %H:%M:%S")
+                }
+                
                 if mode == 1:
-                    params = {
-                        'serial_num': serial_num, 
-                        'ufid': ufid,
-                        'iso': iso, 
-                        'first_name': first_name, 
-                        'last_name': last_name,
-                        'course': course[0],
-                        'class': student_sec_num,
-                        'instructor': course[2],
-                        'room_num': course[4],
-                        "time": now.strftime("%Y-%m-%d %H:%M:%S")
-                    }
+                    params["instructor"] = course[2]
+                    params["room_num"] = course[4]
                 else:
-                    params = {
-                        'serial_num': serial_num, 
-                        'ufid': ufid,
-                        'iso': iso, 
-                        'first_name': first_name, 
-                        'last_name': last_name,
-                        'course': course[0],
-                        'class': course[2],
-                        'instructor': course[3],
-                        'room_num': course[8],
-                        "time": now.strftime("%Y-%m-%d %H:%M:%S")
-                    }
+                    params["instructor"] = course[3]
+                    params["room_num"] = course[8]
                 
                 # Get the timesheet response
                 response = requests.post(f"{BASE_URL}timesheet", params=params)
@@ -214,6 +205,9 @@ def validate(mode, serial_num, card_iso=None, card_ufid=None):
                 is_valid = 0
                 match_found = True
                 break
+            
+        if match_found:
+            break
 
     if not match_found:
         log_messages.append("No matching course found for the student. \n")
