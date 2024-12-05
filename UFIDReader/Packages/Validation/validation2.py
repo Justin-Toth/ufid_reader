@@ -171,21 +171,37 @@ def validate(mode, serial_num, card_iso=None, card_ufid=None):
     # Check student sections against the course schedule
     match_found = False
     for course in courses:
-        course_sec_nums = course[3].split(', ')
+        course_sec_nums = course[3].split(', ') if mode == 1 else course[2]
         for student_sec_num in student_sec_nums:
             if student_sec_num in course_sec_nums:
-                params = {
-                    "serial_num": serial_num,
-                    "ufid": ufid,
-                    "iso": iso,
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "course": course[0],
-                    "class": student_sec_num,
-                    "instructor": course[2],
-                    "room_num": course[4],
-                    "time": now.strftime("%Y-%m-%d %H:%M:%S")
-                }
+                log_messages.append(f"Matching courses: {course}")
+                
+                if mode == 1:
+                    params = {
+                        'serial_num': serial_num, 
+                        'ufid': ufid,
+                        'iso': iso, 
+                        'first_name': first_name, 
+                        'last_name': last_name,
+                        'course': course[0],
+                        'class': student_sec_num,
+                        'instructor': course[2],
+                        'room_num': course[4],
+                        "time": now.strftime("%Y-%m-%d %H:%M:%S")
+                    }
+                else:
+                    params = {
+                        'serial_num': serial_num, 
+                        'ufid': ufid,
+                        'iso': iso, 
+                        'first_name': first_name, 
+                        'last_name': last_name,
+                        'course': course[0],
+                        'class': course[2],
+                        'instructor': course[3],
+                        'room_num': course[8],
+                        "time": now.strftime("%Y-%m-%d %H:%M:%S")
+                    }
                 
                 # Get the timesheet response
                 response = requests.post(f"{BASE_URL}timesheet", params=params)
