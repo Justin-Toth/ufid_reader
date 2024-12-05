@@ -44,6 +44,7 @@ def web_api_get_request(page, params):
         response.raise_for_status()
         return response
     except requests.RequestException as e:
+        validation_logger.error(f"API error: {e}\n")
         return f"API error: {e}"
 
 # Validates a swiped card for exams or courses
