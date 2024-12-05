@@ -1,8 +1,9 @@
 import os
-# from dotenv import load_dotenv
-from datetime import datetime, timedelta
 import requests
 import logging
+
+from dotenv import load_dotenv
+from datetime import datetime, timedelta
 
 # commented out for now to simplify but can use .env file for environment variables instead of storeing paths in code
 # Load environment variables from .env file
@@ -14,27 +15,26 @@ import logging
 # CHECKIN_SITE_URL = os.getenv("CHECKIN_SITE_URL")
 
 ENABLE_LOGGING = True
-BASE_URL="https://gatorufid.pythonanywhere.com/"
-CHECKIN_SITE_URL="https://brirod2240.pythonanywhere.com/api/add_timesheet"
+BASE_URL = "https://gatorufid.pythonanywhere.com/"
+CHECKIN_SITE_URL = "https://brirod2240.pythonanywhere.com/api/add_timesheet"
 
-
-# Setup Logging (Note: Log will be of the last call of the validate function)
+# Setup Logging
 LOG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../Logs")
 os.makedirs(LOG_DIR, exist_ok=True)
 LOG_FILE = os.path.join(LOG_DIR, "validation.log")
 
-logger = logging.getLogger("validation_logger")
-logger.setLevel(logging.INFO)
+validation_logger = logging.getLogger("validation_logger")
+validation_logger.setLevel(logging.INFO)
 formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s", datefmt="[%Y-%m-%d %H:%M:%S]")
 
 file_handler = logging.FileHandler(LOG_FILE, mode='w')
 file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
+validation_logger.addHandler(file_handler)
 
 if ENABLE_LOGGING:
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
-    logger.addHandler(stream_handler)
+    validation_logger.addHandler(stream_handler)
 
 # Helper function to make GET requests to the API
 def web_api_get_request(page, params):    
@@ -44,12 +44,12 @@ def web_api_get_request(page, params):
         response.raise_for_status()
         return response
     except requests.RequestException as e:
-        logger.error(f"API error: {e}")
-        return None
+        return f"API error: {e}"
 
 # Validates a swiped card for exams or courses
 def validate(mode, serial_num, card_iso=None, card_ufid=None):
-    logger.info(f"Starting validation with mode: {mode}, kiosk serial_num: {serial_num}, card_iso: {card_iso}, card_ufid: {card_ufid}")
+    log_messages = []
+    log_messages.append(f"Starting validation with mode: {mode}, kiosk serial_num: {serial_num}, card_iso: {card_iso}, card_ufid: {card_ufid}")
     
     # Prepare parameters for the API request
     params = {
@@ -61,13 +61,14 @@ def validate(mode, serial_num, card_iso=None, card_ufid=None):
     # Fetch student data
     student_response = web_api_get_request(page="roster", params=params)
     if not student_response or student_response.status_code != 200:
-        # error_message is the error message from the API response, or "API unavailable" if no response 
         error_message = student_response.json().get("error", "Unknown error") if student_response else "API unavailable"
-        logger.error(f"Failed to fetch student data: {error_message}")
+        log_messages.append(f"Failed to fetch student data: {error_message} \n")
         error_codes = {
-            "Serial number not found": -1, # -1 indicates invalid serial number
-            "UFID or ISO not found": -2 # -2 indicates invalid UFID or ISO
+            "Serial number not found": -1,  # -1 indicates invalid serial number
+            "UFID or ISO not found": -2  # -2 indicates invalid UFID or ISO
         }
+        for message in log_messages:
+            validation_logger.info(message)
         return {
             "UFID": None,
             "First Name": None,
@@ -77,7 +78,7 @@ def validate(mode, serial_num, card_iso=None, card_ufid=None):
 
     # Extract student data
     student = student_response.json()
-    logger.info(f"Student data: {student}")
+    log_messages.append(f"Student data: {student}")
     
     # Extract student section numbers
     student_sec_nums = [num for num in student["student_data"][4:12] if num]
@@ -91,15 +92,17 @@ def validate(mode, serial_num, card_iso=None, card_ufid=None):
     # Get the room number from the kiosks
     room_response = web_api_get_request(page="kiosks", params={"serial_num": serial_num})
     if not room_response or room_response.status_code != 200:
-        logger.error("Failed to fetch room data.")
+        log_messages.append("Failed to fetch room data. \n")
+        for message in log_messages:
+            validation_logger.info(message)
         return {
             "UFID": None,
             "First Name": None,
             "Last Name": None,
-            "Valid": -5 # -5 indicates unknown error
+            "Valid": -5  # -5 indicates unknown error
         }
     room = room_response.json().get("room_num")
-    logger.info(f"Room: {room}")
+    log_messages.append(f"Room: {room}")
 
     # Determine current day and time
     now = datetime.now()
@@ -107,15 +110,16 @@ def validate(mode, serial_num, card_iso=None, card_ufid=None):
     day_map = {0: "M", 1: "T", 2: "W", 3: "R", 4: "F", 5: "S"}
     day = day_map.get(now.weekday(), None)
     if not day:
-        logger.warning("Invalid school day (e.g., Sunday).")
+        log_messages.append("Invalid school day (e.g., Sunday). \n")
+        for message in log_messages:
+            validation_logger.info(message)
         return {
             "UFID": None,
             "First Name": None,
             "Last Name": None,
-            "Valid": -4 # -4: Invalid school day
-        }  
-    # Log the current day (e.g., 'Monday' instead of 'M')
-    logger.info(f"Day: {now.strftime("%A")}")
+            "Valid": -4  # -4: Invalid school day
+        }
+    log_messages.append(f"Day: {now.strftime('%A')}")
     current_time = now.time()
 
     # Create the parameters for the API request based on mode
@@ -126,14 +130,16 @@ def validate(mode, serial_num, card_iso=None, card_ufid=None):
     params_mode1 = {
         "serial_num": serial_num,
         "date": date
-    } 
+    }
     params_data = params_mode1 if mode == 1 else params_mode0       
     endpoint = "exams" if mode == 1 else "courses"
    
     # Fetch course or exam data 
     schedule_response = web_api_get_request(page=endpoint, params=params_data)
     if not schedule_response or schedule_response.status_code != 200:
-        logger.error("Failed to fetch schedule data.")
+        log_messages.append("Failed to fetch schedule data. \n")
+        for message in log_messages:
+            validation_logger.info(message)
         return {
             "UFID": None,
             "First Name": None,
@@ -142,12 +148,12 @@ def validate(mode, serial_num, card_iso=None, card_ufid=None):
         }
 
     results = schedule_response.json()
-    logger.info(f"Schedule results: {results}")
+    log_messages.append(f"Schedule results: {results}")
 
     # Validate against the schedule
     is_valid = -3  # Default: No match found
     courses = []
-    grace_period = timedelta(minutes=15) # configurable period for class check-in
+    grace_period = timedelta(minutes=15)  # configurable period for class check-in
 
     for result in results:
         if mode == 1:
@@ -159,15 +165,12 @@ def validate(mode, serial_num, card_iso=None, card_ufid=None):
         if start.time() <= current_time <= end.time():
             courses.append(result)
 
-    logger.info(f"Matching courses: {courses}")
+    log_messages.append(f"Matching courses: {courses}")
 
     # Check student sections against the course schedule
     match_found = False
-    # Iterate through each course to find a match
     for course in courses:
         course_sec_nums = course[3].split(', ')
-        
-        # Check if any student section number matches the course section numbers
         for student_sec_num in student_sec_nums:
             if student_sec_num in course_sec_nums:
                 params = {
@@ -185,20 +188,22 @@ def validate(mode, serial_num, card_iso=None, card_ufid=None):
                 
                 # Get the timesheet response
                 response = requests.post(f"{BASE_URL}timesheet", params=params)
-                logger.info(f"Timesheet POST response: {response.status_code}, {response.text}")
+                log_messages.append(f"Timesheet POST response: {response.status_code}, {response.text}")
 
                 # Get the check-in site response
                 checkin_site_response = requests.post(CHECKIN_SITE_URL, json=params)
-                logger.info(f"Check-in site POST response: {checkin_site_response.status_code}, {checkin_site_response.text}")
+                log_messages.append(f"Check-in site POST response: {checkin_site_response.status_code}, {checkin_site_response.text}")
 
                 is_valid = 0
                 match_found = True
                 break
 
-    # log a message if no match is found
     if not match_found:
-        logger.error("No matching course found for the student. \n")
-        is_valid = -5 # unknown error for now
+        log_messages.append("No matching course found for the student. \n")
+        is_valid = -5  # unknown error for now
+
+    for message in log_messages:
+        validation_logger.info(message)
 
     return {
         "UFID": ufid,
