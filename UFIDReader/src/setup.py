@@ -34,7 +34,7 @@ def verify_imports():
         #check_call returns exception, can check if worked correctly (ie if except not entered we know it was successful)
 
     except FileNotFoundError:
-        print("requirements.txt not found. Please make sure that the requirements.txt file is in the same directory as setup.py.")
+        print("requirements.txt not found. Please make sure that the requirements.txt file is in the config directory.")
         sys.exit(1)
     except subprocess.CalledProcessError as e:
         print(f"An error occurred while installing dependencies: {e}")
