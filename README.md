@@ -88,9 +88,22 @@ Note: The days are NOT set as booleans but as strings of 'true' or 'false'. It i
 1. Pip install requests if you have not already
 2. Run the python file
 3. The file will prompt for an input of the semester in the format of year and semester. Input the year without the second digit (e.g 2024 is 224) then the semester (1 for spring, 5 for summer, 8 for fall). For summer A, B, or C you have to append 6W1, 6W2, or 1 respectively to the 5. This is the same way semesters/terms are set in the publicly available course API. (e.g. 2248 for Fall 2024 or 22456W1 for Summer A 2024)
-4. The number of sections loaded will be shown as they are loaded in. Once all are loaded in a success message will be shown and a SQL database named courses_{term}.db will be created. A json file will also be created for the use of professor accounts in the professor website. This file contains sections sorted into their respective course code and name then sorted by instructors creating a hierarchical structure of instructors > course code and name > section number 
-5. Place the courses_{term}.db in the /data folder for the admin website and place the json file in the professor website. Also make sure to update the app.py file, specifically the part where COURSE_DATA is set based on the database file, so that it is pulling from the new course_{term}.db file.
+4. The number of sections loaded will be shown as they are loaded in. Once all are loaded in a success message will be shown and a SQL database named courses_{term}.db will be created. A json file will also be created for the use of professor accounts in the professor website. This file contains sections sorted into their respective course code and name then sorted by instructors creating a hierarchical structure of instructors > course code and name > section number. In addition to this, an exams_{term}.db file will also be created with the course code, name, instructors, sections, and empty fields for the room, date, start time, and end time.  
+5. Place the courses_{term}.db and exams_{term}.db in the /data folder for the admin website and place the json file in the professor website. Also make sure to update the app.py file, specifically the part where COURSE_DATA and EXAM_DATA is set based on the database files, so that it is pulling from the new course_{term}.db file and new exam_{term}.db file.
 **Note: This should be updated every semester as course data chages** \
+
+## System Test Checklist
+1. Check that power and internet is connected to Kiosk.
+2. Check that internet and website are functioning
+3. Check that the MRD5 scanner is powered up by pressing the power on button which lights up and makes a beeping noise when turned on.
+4. Check that required encryption packages (SQLcipter3-binary, python-dotenv) are installed. 
+5. Check that the data for the courses and exams is up to date. 
+6. Check the serial number in the kiosk database matches that of the device used. In this case a Rasp Pi 4.
+7. Check that the room associated with the kiosk is the room that it is actually in or that you want to simulate it being in. Like 'NSC215'.
+8. Check that the student is in the roster with the correct ISO and UFID
+9. If an exam check that it is set to the correct room, date, and time.
+10. Check that the section associated with the student in the roster is happening in the time range of the course within 15 before and after, on the day the class is usually, and in the room that is usually in. If an exam check that section associated with the student is associated with a course that has a exam in the time range with no buffer, on the date, and in the room of the exam.
+11. Check that the mode parameter in the validate function is set to 1 for exam mode and any other number for regular mode. Though 0 should be commonly used for regular mode.  
 
 ## Gator Check In Site Professor Version (Hosted on PythonAnywhere)
 Gator Check In is a web application that allows professors to manage timesheets created when UFIDs are scanned on the raspberry pi, therefore getting a better gage on student attendance. In theory, admins will have an account that gives an overview of students marked present for their courses only. They have the option of filtering through that data to return specific students, dates, section numbers, and course ids to find what they are looking for.
@@ -152,6 +165,29 @@ GatorUFID or GatorCheck is a web application that allows for database hosting, d
 - POST /timesheet\[serial_num\]\[ufid\]\[iso\]\[first_name\]\[last_name\]\[course\]\[class\]\[instructor\]\[room_num\]\[time\]
   - Uses serial_num to verify authorized device by checking it exist in the PiConfig table in the database
   - Saves ufid, iso, first name, last name, course code, class/section number, instructor, room number, and time to timesheet table in database
+ 
+### Encryption for Database Security
+
+To ensure the database is securely encrypted, follow these steps:
+
+1. Install the required Python packages in PythonAnywhere's bash console:
+
+```bash
+pip install sqlcipher3-binary
+pip install python-dotenv
+```
+
+The `.env` file contains hardcoded keys that are necessary for the encryption to work. The database in the GitHub directory is encrypted using this specific key. Using a different key will result in an error because the database cannot be decrypted without the exact key. For official deployment, ensure the .env file is excluded from the GitHub repository to maintain security.
+
+To include a new, unencrypted database, follow these steps:
+
+1. Delete the existing encrypted database.
+2. Add the unencrypted database file to the appropriate directory.
+3. Update the encryption key in the `.env` file.
+
+**Recommendation**: Save a copy of the unencrypted database for backup purposes before proceeding. The unencrypted database will be overridden and encrypted using the key specified in the .env file.
+
+3. Re-run the website to complete the encryption process for the new database.
 
 ### Instructions for Admin Site
 1. If you want to replicate the app do the following, else if you just want access to the website go to the link https://gatorufid.pythonanywhere.com (to get to admin page use login admin1 for both username and password)
@@ -165,16 +201,23 @@ GatorUFID or GatorCheck is a web application that allows for database hosting, d
       * data/
       * static/
       * templates/
-      * uploads/  
-5. Reload the website in the Web tab
-6. Click the link above the reload button to open the website  
+      * uploads/
+5. Install necessary packages for website encryption
+6. Reload the website in the Web tab
+7. Click the link above the reload button to open the website  
    
 ## Completed Work
 **Log of Completed Work:** https://docs.google.com/spreadsheets/d/1taW3SdkVjubU3CihEUra0HCIytSY2XjPeqCYWhKH5SU/edit?usp=sharing \
 \
 **Main Work Completed (Production Release and Post-Mortem)**
 * Software
-   * A
+   * Finished data at rest encryption of some of the database containing what could be considered sensitive data using SQLCipher.
+   * Created a database for exams containing the course code, name, instructors, sections, and empty fields for room, date, start time, and end time.
+   * Created a page for exams to view, edit, and filter them.
+   * Cleaned up the admin website to be more aesthetic.
+   * Tested validation code with newly encrypted database.
+   * Rerouted landing page to the login instead of the form.
+   * Added to the API-to-Database.py code to include a program which creates a new exam database depending on the semester inputted by the user
 * Hardware
    * C
 
@@ -183,7 +226,7 @@ GatorUFID or GatorCheck is a web application that allows for database hosting, d
 * Software
    * Added a prof_profile function to the API-to-Database.py which iterates through the course database and returns a json file structured with the instructors, courses belonging to those instructors, and class sections belonging to those courses.
    * Edited the validate function to incorporate an exam mode. (API calls and Database not created yet)
-   * Started encryption for both data at rest (SQL Databases) and in transit (REST API http requests)
+   * Started encryption for data at rest (SQL Databases)
    * Created feature that allows users to export timesheet tables to a csv.
    * Started working on faster refresh time of data that prevents users from having to reload the site to see updated scans.
    * Worked on updating backend to allow for custom timsheets title changes for organization purposes.
@@ -301,6 +344,18 @@ Data validation code will be written to ensure that the input is valid with rega
     * To fix this issue the form can stay on the login page still being accessed by the form tab but after logging in the roster table could have editable fields like the rest of the table
   * Button was not developed so mode has to manually edited
     * This can be done in UFIDReader/src/main.py by changing the parameter to 1 for mode in the validate function which is called in the process_scan function
+  * Exams search filter latency
+    * Due to the amount of searchable fields for each course the dynamic search filter takes a few seconds to show the results
+  * Filter Breaks Pagination
+    * When the filter/search bar is used it breaks the pagination allowing more results than what is laid out in the pagination
+    * To fix this issue it might be a better idea to not do dynamic filtering but rather have a form which when submitted filters based on the fields entered.
+  * Data is only encrypted at rest
+    * Data is not encrypted in transit
+    * Anyone who obtains the database file will not be able to access the information without the key
+    * However, anyone who uses the API calls will be able to get the information since the routing decrypts the data
+    * To fix this issue the data should be encrypted before being sent and decrypted when received. 
+  * Kiosk frame latency
+  * 
 
 \
 **Main Bugs/Issues (Release Candidate and Beta Test):**
