@@ -4,7 +4,7 @@ import random
 import logging
 import time
 
-from validation2 import validate 
+from ufid_reader.UFIDReader.Packages.Validation.validation import validate 
 
 # Enable/Disable logging
 ENABLE_LOGGING = True
