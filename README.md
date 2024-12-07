@@ -96,7 +96,7 @@ Note: The days are NOT set as booleans but as strings of 'true' or 'false'. It i
 1. Check that power and internet is connected to Kiosk.
 2. Check that internet and website are functioning
 3. Check that the MRD5 scanner is powered up by pressing the power on button which lights up and makes a beeping noise when turned on.
-4. Check that required encryption packages (SQLcipter3-binary, python-dotenv) are installed. 
+4. Check that required encryption packages (SQLcipter3-binary, python-dotenv) are installed and that the key provided is the correct encryption key. 
 5. Check that the data for the courses and exams is up to date. 
 6. Check the serial number in the kiosk database matches that of the device used. In this case a Rasp Pi 4.
 7. Check that the room associated with the kiosk is the room that it is actually in or that you want to simulate it being in. Like 'NSC215'.
@@ -177,9 +177,17 @@ pip install sqlcipher3-binary
 pip install python-dotenv
 ```
 
-The `.env` file contains hardcoded keys that are necessary for the encryption to work. The database in the GitHub directory is encrypted using this specific key. Using a different key will result in an error because the database cannot be decrypted without the exact key. For official deployment, ensure the .env file is excluded from the GitHub repository to maintain security.
+The .env file contains hardcoded keys that are necessary for the encryption to work. The database in the GitHub directory is encrypted using this specific key. Using a different key will result in an error because the database cannot be decrypted without the exact key. For official deployment, ensure the .env file is excluded from the GitHub repository to maintain security.
 
-To include a new, unencrypted database, follow these steps:
+The .env file must follow this format:
+
+```bash
+ENCRYPTION_KEY=#####################
+FLASK_SECRET_KEY=your_secret_key
+```
+**Note**: The variable names (ENCRYPTION_KEY and FLASK_SECRET_KEY) must remain exactly as shown, and no quotation marks should be used around the keys. Additionally, do not change the FLASK_SECRET_KEY, as doing so will cause the admin login to stop working.
+
+To encrypt a new, unencrypted database, follow these steps:
 
 1. Delete the existing encrypted database.
 2. Add the unencrypted database file to the appropriate directory.
@@ -219,7 +227,11 @@ To include a new, unencrypted database, follow these steps:
    * Rerouted landing page to the login instead of the form.
    * Added to the API-to-Database.py code to include a program which creates a new exam database depending on the semester inputted by the user
 * Hardware
-   * C
+   * Created scripts to run GUI off of boot sequence.
+   * Created package to hold scripts for compatibility.
+   * Updated GUI main screen with Images and time clock.
+   * Improved relative sizing of GUI to match any size screen.
+   * Tested button capability wih GPIO on Raspi.
 
 \
 **Main Work Completed (Release Candidate and Beta Test)**
@@ -336,27 +348,30 @@ Data validation code will be written to ensure that the input is valid with rega
     * The rosters also need to be reset for students to enter their information or just updated if access to UF database is granted
     * Instructor/professor ownership of course will also have to be update likely using the API-to-Database.py code
   * Kiosk room data will be updated if moved
-    * In the Kiosk tab of the website, based on the serial number the kiosk's room can be changed 
+    * In the Kiosk tab of the website, based on the serial number the kiosk's room can be changed
 * Bugs/Issues
   * Form for student data is inconvenient as anytime you need to update information you have to put in all the info again
     * This was done purposely as it was thought that students would provide this information and should not see or have access to other information
     * However, it is an inconvenience in testing and debugging
     * To fix this issue the form can stay on the login page still being accessed by the form tab but after logging in the roster table could have editable fields like the rest of the table
-  * Button was not developed so mode has to manually edited
+  * Button was not developed so mode has to be manually edited
     * This can be done in UFIDReader/src/main.py by changing the parameter to 1 for mode in the validate function which is called in the process_scan function
   * Exams search filter latency
-    * Due to the amount of searchable fields for each course the dynamic search filter takes a few seconds to show the results
+    * Due to the amount of searchable fields for each course, the dynamic search filter takes a few seconds to show the results
   * Filter Breaks Pagination
-    * When the filter/search bar is used it breaks the pagination allowing more results than what is laid out in the pagination
-    * To fix this issue it might be a better idea to not do dynamic filtering but rather have a form which when submitted filters based on the fields entered.
+    * When the filter/search bar is used, it breaks the pagination allowing more results than what is laid out in the pagination
+    * To fix this issue, it might be a better idea to not do dynamic filtering but rather have a form which when submitted filters based on the fields entered.
   * Data is only encrypted at rest
     * Data is not encrypted in transit
     * Anyone who obtains the database file will not be able to access the information without the key
     * However, anyone who uses the API calls will be able to get the information since the routing decrypts the data
-    * To fix this issue the data should be encrypted before being sent and decrypted when received. 
+    * To fix this issue the data should be encrypted before being sent and decrypted when received
   * Kiosk frame latency
-  * 
+    * Response times range in speed from near instant to upwards of 4 seconds or more.
+    * Variable due to the communication over the internet to the website database, not in processing speed on the Pi.
+    * Not much to be done to speed this up, other than storing database info locally on the Pi, which might create security issues. 
 
+\
 \
 **Main Bugs/Issues (Release Candidate and Beta Test):**
 * Main loop not running
