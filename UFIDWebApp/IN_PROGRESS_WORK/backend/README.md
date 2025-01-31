@@ -32,7 +32,7 @@
     uv run run_app.py
     ```
     
-2. The server will be running at 'http://127.0.0.1:8000'.
+2. The server will be running at `http://127.0.0.1:8000`.
 
 ## API/Schema Documentation
 
