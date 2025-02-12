@@ -1,0 +1,32 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UFIDReader", "UFIDReader", "{0A1A7495-36FF-8651-14E8-800FCD429978}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3B14D16B-A446-6186-AD54-3A10E6C0F7BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyApp", "UFIDReader\src\MyApp\MyApp.csproj", "{8978D221-5E60-8000-DACF-075689C7EED6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8978D221-5E60-8000-DACF-075689C7EED6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8978D221-5E60-8000-DACF-075689C7EED6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8978D221-5E60-8000-DACF-075689C7EED6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8978D221-5E60-8000-DACF-075689C7EED6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3B14D16B-A446-6186-AD54-3A10E6C0F7BB} = {0A1A7495-36FF-8651-14E8-800FCD429978}
+		{8978D221-5E60-8000-DACF-075689C7EED6} = {3B14D16B-A446-6186-AD54-3A10E6C0F7BB}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3C2AAD57-11AE-4938-8546-78864D2DA688}
+	EndGlobalSection
+EndGlobal
