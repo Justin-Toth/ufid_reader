@@ -1,0 +1,25 @@
+version: '3.1'
+
+services:
+  mariadb:
+    image: mariadb
+    container_name: ufid_mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: mypass
+      MARIADB_DATABASE: ufid_database
+      MARIADB_USER: myuser
+      MARIADB_PASSWORD: mypass
+    ports:
+      - "3306:3306"
+    networks:
+      - ufid_network
+    volumes:
+      - ufid_data:/var/lib/mysql
+
+volumes:
+  ufid_data:
+
+networks:
+  ufid_network:
+    driver: bridge
