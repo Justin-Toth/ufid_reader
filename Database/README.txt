@@ -7,7 +7,7 @@ docker-compose.yml
     To run: 
         docker-compose up -d
 
-    Recommended: Interface w/ Docker GUI
+    Recommended: interface w/ Docker GUI
 
 /data
     # This is the static data to be entered into the database upon intializing the database through docker-compose.
@@ -18,7 +18,7 @@ docker-compose.yml
             # Lists running docker containers
             docker ps
             # If not running, start the container
-            docker start 
+            docker start ufid_database
         
         Access through mysql:
             mysql -h 127.0.0.1 -P 3306 --protocol=TCP -u myuser -p
@@ -30,9 +30,13 @@ docker-compose.yml
 
     To insert entries into the mariaDB database (MariaDB):
         SHOW DATABASES; # Shows available databases within MariaDB 
-        USE ufid_database;
+        USE ufid_database; # Switches usage to ufid_database
         Copy + paste sql entries from /data folder
             This creates 2 tables within the ufid_database, each with multiple entries: courses, exams
             roster.sql WIP
-        SHOW TABLES; # courses and exams should be shown: 
+        SHOW TABLES; # courses and exams should be shown
+
+WIP
+    1. Refactor backend to interact with the mariaDB database hosted on docker
+    2. Set up docker/database on a server that can be remotely accessed safely anywhere instead of utilizing LAN connections
 
