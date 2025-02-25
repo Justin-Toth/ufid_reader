@@ -8,7 +8,7 @@
     <Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
             <!-- Centered Image -->
-            <Image Source="avares://MyAvaloniaApp/assets/florida_gators_logo.png" 
+            <Image Source="avares://MyAvaloniaApp/assets/gators_logo.png" 
                    Stretch="Uniform" 
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
