@@ -1,9 +1,25 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="1080" d:DesignHeight="720"
-        x:Class="MyApp.MainWindow"
-        Title="MyApp">
-    Welcome to Avalonia!
+        x:Class="MyAvaloniaApp.MainWindow"
+        Title="Image with Clock Display"
+        Width="600"
+        Height="400">
+
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
+            <!-- Centered Image -->
+            <Image Source="avares://MyAvaloniaApp/assets/florida_gators_logo.png" 
+                   Stretch="Uniform" 
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Width="300" Height="300"/> <!-- Adjust size as needed -->
+
+            <!-- Clock Display -->
+            <TextBlock x:Name="ClockText"
+                       FontSize="24"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+
 </Window>
