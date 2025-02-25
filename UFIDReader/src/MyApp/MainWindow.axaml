@@ -1,14 +1,14 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="MyAvaloniaApp.MainWindow"
-        Title="Image with Clock Display"
+        Title="UFIDReader"
         Width="600"
         Height="400">
 
     <Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
             <!-- Centered Image -->
-            <Image Source="avares://MyAvaloniaApp/assets/florida_gators_logo.png" 
+            <Image Source="avares://MyAvaloniaApp/assets/gators_logo.png" 
                    Stretch="Uniform" 
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
