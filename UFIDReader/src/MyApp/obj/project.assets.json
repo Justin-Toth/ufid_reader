@@ -1,7 +1,7 @@
 {
   "version": 3,
   "targets": {
-    "net8.0": {
+    "net9.0": {
       "Avalonia/11.2.1": {
         "type": "package",
         "dependencies": {
@@ -1417,7 +1417,7 @@
     }
   },
   "projectFileDependencyGroups": {
-    "net8.0": [
+    "net9.0": [
       "Avalonia >= 11.2.1",
       "Avalonia.Desktop >= 11.2.1",
       "Avalonia.Diagnostics >= 11.2.1",
@@ -1426,29 +1426,30 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Dylan\\.nuget\\packages\\": {}
+    "/Users/samueltrejo/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\CEN3907\\UF-ID Project\\ufid_reader-main\\UFIDReader\\src\\MyApp\\MyApp.csproj",
-      "projectName": "MyApp",
-      "projectPath": "D:\\CEN3907\\UF-ID Project\\ufid_reader-main\\UFIDReader\\src\\MyApp\\MyApp.csproj",
-      "packagesPath": "C:\\Users\\Dylan\\.nuget\\packages\\",
-      "outputPath": "D:\\CEN3907\\UF-ID Project\\ufid_reader-main\\UFIDReader\\src\\MyApp\\obj\\",
+      "projectUniqueName": "/Users/samueltrejo/Desktop/repo_design_proj/ufid_reader/UFIDReader/src/MyApp/MyAvaloniaApp.csproj",
+      "projectName": "MyAvaloniaApp",
+      "projectPath": "/Users/samueltrejo/Desktop/repo_design_proj/ufid_reader/UFIDReader/src/MyApp/MyAvaloniaApp.csproj",
+      "packagesPath": "/Users/samueltrejo/.nuget/packages/",
+      "outputPath": "/Users/samueltrejo/Desktop/repo_design_proj/ufid_reader/UFIDReader/src/MyApp/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Dylan\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/Users/samueltrejo/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
-        "net8.0"
+        "net9.0"
       ],
       "sources": {
+        "/usr/local/Cellar/dotnet/9.0.101/libexec/library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net8.0": {
-          "targetAlias": "net8.0",
+        "net9.0": {
+          "targetAlias": "net9.0",
           "projectReferences": {}
         }
       },
@@ -1461,11 +1462,12 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "9.0.100"
     },
     "frameworks": {
-      "net8.0": {
-        "targetAlias": "net8.0",
+      "net9.0": {
+        "targetAlias": "net9.0",
         "dependencies": {
           "Avalonia": {
             "target": "Package",
@@ -1504,7 +1506,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/Cellar/dotnet/9.0.101/libexec/sdk/9.0.101/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
